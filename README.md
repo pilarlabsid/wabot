@@ -35,7 +35,7 @@ const adapterProvider = createProvider(BaileysClass, { usePairingCode: true, pho
 
 Follow these steps to deploy the application:
 
-- Clone this repository: `https://github.com/andresayac/bot-wa-baileys.git`
+- Clone this repository: `https://github.com/ujangsprr/wa-bot.git`
 - Enter the `bot-wa-baileys` directory
 - Run the command `npm i`
 - Run the command `npm run example` to start the bot
