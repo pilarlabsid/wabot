@@ -1,0 +1,51 @@
+{
+  "name": "newbot",
+  "version": "1.0.0",
+  "description": "API whatsapp bot",
+  "main": "lib/baileys.js",
+  "types": "lib/baileys.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node -r ts-node/register public/notification.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ujangsprr"
+  },
+  "keywords": [
+    "bot",
+    "baileys",
+    "whatsapp",
+    "bot-whatsapp",
+    "flow",
+    "chatbot",
+    "whatsapp"
+  ],
+  "files": [
+    "./lib/**/*"
+  ],
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@whiskeysockets/baileys": "^6.4.0",
+    "body-parser": "^1.20.2",
+    "crypto": "^1.0.1",
+    "express": "^4.19.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "qr-image": "^3.2.0",
+    "qrcode-terminal": "^0.12.0",
+    "wa-sticker-formatter": "^4.4.4"
+  },
+  "author": "Ujang Supriyadi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ujangsprr"
+  },
+  "homepage": "https://github.com/ujangsprr",
+  "devDependencies": {
+    "@types/fluent-ffmpeg": "^2.1.21",
+    "@types/mime-types": "^2.1.1",
+    "@types/node": "^20.4.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
