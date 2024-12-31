@@ -145,5 +145,12 @@ export declare class BaileysClass extends EventEmitter {
      * @example await sendSticker("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "https://dn/image.png" || "https://dn/image.gif" || "https://dn/image.mp4", {pack: 'User', author: 'Me'}, messages)
      */
     sendSticker: (remoteJid: string, url: string, stickerOptions: any, messages?: any) => Promise<void>;
+    /**
+     * @param {string} remoteJid
+     * @param {string} text
+     * @param {any} messages
+     * @example await sendTextToGroup("xxxxxxxxxxxxxxxxxx@g.us", "Hello, Group!", messages)
+     */
+    sendTextToGroup: (remoteJid: string, text: string, messages?: any) => Promise<void>;
 }
-export {};
+export { };

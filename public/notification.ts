@@ -40,6 +40,20 @@ app.post('/send-message', authenticate, async (req, res) => {
     }
 });
 
+app.post('/send-to-group', authenticate, async (req, res) => {
+    const { groupId, message } = req.body;
+    if (!groupId || !message) {
+        return res.status(400).json({ error: 'Number and message are required' });
+    }
+
+    try {
+        await botBaileys.sendTextToGroup(groupId, message);
+        res.status(200).json({ success: true, message: 'Message sent successfully' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
