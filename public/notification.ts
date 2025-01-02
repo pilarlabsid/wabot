@@ -2,13 +2,19 @@ import { BaileysClass } from '../lib/baileys.js';
 import express from 'express';
 import bodyParser from 'body-parser';
 import winston from 'winston';
+import moment from 'moment-timezone'; // Tambahkan moment-timezone
+
+// Fungsi untuk mendapatkan timestamp dengan zona waktu Jakarta (GMT+7)
+const timezoned = () => moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss');
 
 // Konfigurasi logger dengan Winston
 const logger = winston.createLogger({
     level: 'info',
     format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
+        winston.format.timestamp({ format: timezoned }), // Gunakan timestamp dengan zona waktu Jakarta
+        winston.format.printf(({ timestamp, level, message, stack }) => {
+            return `${timestamp} [${level.toUpperCase()}]: ${message}${stack ? `\n${stack}` : ''}`;
+        })
     ),
     transports: [
         // Logging ke file
@@ -18,7 +24,9 @@ const logger = winston.createLogger({
         new winston.transports.Console({
             format: winston.format.combine(
                 winston.format.colorize(),
-                winston.format.simple()
+                winston.format.printf(({ timestamp, level, message }) => {
+                    return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+                })
             )
         })
     ]
