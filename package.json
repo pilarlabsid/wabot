@@ -1,5 +1,5 @@
 {
-  "name": "newbot",
+  "name": "wabot",
   "version": "1.0.0",
   "description": "API whatsapp bot",
   "main": "lib/baileys.js",
