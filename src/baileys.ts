@@ -550,6 +550,39 @@ export class BaileysClass extends EventEmitter {
 
         await this.vendor.sendMessage(number, buffer, { quoted: messages });
     }
+
+    /**
+     * Mengirim pesan teks ke grup WhatsApp
+     * 
+     * @param {string} remoteJid - ID grup WhatsApp (contoh: "xxxxxxxxxxxxxxxxxx@g.us")
+     * @param {string} message - Pesan teks yang akan dikirim
+     * @param {any} messages - Opsi kutipan pesan (optional)
+     * @example await sendTextToGroup("xxxxxxxxxxxxxxxxxx@g.us", "Hello, Group!", messages)
+     * @returns {Promise<{ status: string, message: string }>} - Status pengiriman pesan
+     */
+    sendTextToGroup = async (remoteJid: string, message: string, messages: any = null): Promise<{ status: string, message: string }> => {
+        try {
+            // Membersihkan dan memformat ID grup
+            const groupId = utils.formatPhone(remoteJid);
+
+            // Mengirim pesan teks ke grup
+            await this.vendor.sendMessage(
+                groupId,
+                {
+                    text: message,
+                },
+                { quoted: messages }
+            );
+
+            return {
+                status: 'success',
+                message: 'Message sent to group successfully',
+            };
+        } catch (error) {
+            console.error(`Error sending text to group: ${error.message}`);
+            throw error;
+        }
+    };
 }
 
 

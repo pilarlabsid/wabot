@@ -146,11 +146,17 @@ export declare class BaileysClass extends EventEmitter {
      */
     sendSticker: (remoteJid: string, url: string, stickerOptions: any, messages?: any) => Promise<void>;
     /**
-     * @param {string} remoteJid
-     * @param {string} text
-     * @param {any} messages
+     * Mengirim pesan teks ke grup WhatsApp
+     *
+     * @param {string} remoteJid - ID grup WhatsApp (contoh: "xxxxxxxxxxxxxxxxxx@g.us")
+     * @param {string} message - Pesan teks yang akan dikirim
+     * @param {any} messages - Opsi kutipan pesan (optional)
      * @example await sendTextToGroup("xxxxxxxxxxxxxxxxxx@g.us", "Hello, Group!", messages)
+     * @returns {Promise<{ status: string, message: string }>} - Status pengiriman pesan
      */
-    sendTextToGroup: (remoteJid: string, text: string, messages?: any) => Promise<void>;
+    sendTextToGroup: (remoteJid: string, message: string, messages?: any) => Promise<{
+        status: string;
+        message: string;
+    }>;
 }
-export { };
+export {};
