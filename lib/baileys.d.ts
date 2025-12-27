@@ -20,7 +20,6 @@ type SendMessageOptions = {
 };
 export declare class BaileysClass extends EventEmitter {
     private vendor;
-    private store;
     private globalVendorArgs;
     private sock;
     private NAME_DIR_SESSION;

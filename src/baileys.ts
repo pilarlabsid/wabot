@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import pino from 'pino'
 import NodeCache from 'node-cache'
+import qrcode from 'qrcode-terminal'
 import makeWASocket, {
     DisconnectReason,
     fetchLatestBaileysVersion,
@@ -26,9 +27,6 @@ import { join } from 'path';
 
 
 import fs from 'fs-extra';
-
-// Use require for makeInMemoryStore to avoid import issues
-const { makeInMemoryStore } = require('@whiskeysockets/baileys');
 
 interface Args {
     debug?: boolean;
@@ -59,7 +57,6 @@ const msgRetryCounterCache = new NodeCache()
 
 export class BaileysClass extends EventEmitter {
     private vendor: any;
-    private store: any;
     private globalVendorArgs: Args;
     private sock: any;
     private NAME_DIR_SESSION: string;
@@ -69,7 +66,6 @@ export class BaileysClass extends EventEmitter {
 
         super()
         this.vendor = null;
-        this.store = null;
         this.globalVendorArgs = { name: `bot`, usePairingCode: false, phoneNumber: null, gifPlayback: false, dir: './', ...args };
         this.NAME_DIR_SESSION = `${this.globalVendorArgs.dir}${this.globalVendorArgs.name}_sessions`;
         this.initBailey();
@@ -82,11 +78,7 @@ export class BaileysClass extends EventEmitter {
     }
 
     getMessage = async (key: WAMessageKey): Promise<WAMessageContent | undefined> => {
-        if (this.store) {
-            const msg = await this.store.loadMessage(key.remoteJid, key.id)
-            return msg?.message || undefined
-        }
-        // only if store is present
+        // Store functionality removed - return undefined
         return proto.Message.fromObject({})
     }
 
@@ -100,11 +92,12 @@ export class BaileysClass extends EventEmitter {
 
         if (this.globalVendorArgs.debug) console.log(`using WA v${version.join('.')}, isLatest: ${isLatest}`)
 
-        this.store = makeInMemoryStore({ logger })
-        this.store.readFromFile(`${this.NAME_DIR_SESSION}/baileys_store.json`)
-        setInterval(() => {
-            this.store.writeToFile(`${this.NAME_DIR_SESSION}/baileys_store.json`)
-        }, 10_000)
+        // Temporarily disabled store to fix makeInMemoryStore issue
+        // this.store = makeInMemoryStore({ logger })
+        // this.store.readFromFile(`${this.NAME_DIR_SESSION}/baileys_store.json`)
+        // setInterval(() => {
+        //     this.store.writeToFile(`${this.NAME_DIR_SESSION}/baileys_store.json`)
+        // }, 10_000)
 
         try {
             this.setUpBaileySock({ version, logger, state, saveCreds });
@@ -127,8 +120,6 @@ export class BaileysClass extends EventEmitter {
             generateHighQualityLinkPreview: true,
             getMessage: this.getMessage,
         })
-
-        this.store?.bind(this.sock.ev)
 
         if (this.globalVendorArgs.usePairingCode) {
             if (this.globalVendorArgs.phoneNumber) {
@@ -170,6 +161,11 @@ export class BaileysClass extends EventEmitter {
         }
 
         if (qr && !this.globalVendorArgs.usePairingCode) {
+            // Display QR code in terminal as ASCII art
+            console.log('\n📱 SCAN QR CODE BELOW:\n');
+            qrcode.generate(qr, { small: true });
+            console.log('\n');
+
             if (this.plugin) this.emit('require_action', {
                 instructions: [
                     `Debes escanear el QR Code 👌 ${this.globalVendorArgs.name}.qr.png`,
