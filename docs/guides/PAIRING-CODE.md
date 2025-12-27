@@ -24,7 +24,7 @@ Pairing Code adalah alternatif dari QR Code untuk menghubungkan WhatsApp bot. De
 ### Method 1: Script Interaktif (Recommended)
 
 ```bash
-node pairing-code.js
+node examples/pairing-code.js
 ```
 
 **Langkah-langkah:**
@@ -166,7 +166,7 @@ API_KEY=your_api_key_here
 rm -rf bot_sessions/
 
 # Jalankan ulang
-node pairing-code.js
+node examples/pairing-code.js
 ```
 
 ### "Phone number already registered"

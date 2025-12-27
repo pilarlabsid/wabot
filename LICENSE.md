@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2022 Leifer Mendez
+Copyright (c) 2022-2025 Leifer Mendez, Ujang Supriyadi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

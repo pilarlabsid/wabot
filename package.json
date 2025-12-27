@@ -6,9 +6,9 @@
   "types": "lib/baileys.d.ts",
   "scripts": {
     "build": "tsc",
-    "start": "node -r ts-node/register public/server.ts",
-    "pairing": "node pairing-code.js",
-    "test": "node test-bot.js"
+    "start": "node public/server.js",
+    "pairing": "node examples/pairing-code.js",
+    "test": "node examples/test-bot.js"
   },
   "repository": {
     "type": "git",

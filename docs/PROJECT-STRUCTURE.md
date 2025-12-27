@@ -16,7 +16,6 @@ wabot/
 ├── docs/                        # 📚 All documentation
 │   ├── README.md                # Documentation index
 │   ├── API-SUMMARY.md           # Complete API overview
-│   ├── REFACTORING-SUMMARY.md   # Architecture details
 │   │
 │   ├── api/                     # API endpoint docs
 │   │   ├── CONNECTION-API.md
@@ -30,7 +29,6 @@ wabot/
 │
 ├── public/                      # 🚀 Modular server code
 │   ├── server.ts                # Main entry point (33 lines)
-│   ├── server-legacy.ts         # Old monolithic (backup)
 │   │
 │   ├── config/                  # Configuration
 │   │   └── logger.ts
@@ -67,16 +65,17 @@ wabot/
 │       └── index.ts
 │
 ├── src/                         # 🔧 Core library
-│   ├── baileys.ts               # Baileys wrapper class
-│   └── utils.ts                 # Utility functions
+│   ├── baileys.ts               # Baileys wrapper
+│   └── utils.ts                 # Utilities
+│
+├── examples/                   # 📝 Example scripts
+│   ├── test-bot.js             # Testing script
+│   └── pairing-code.js         # Pairing code example
 │
 ├── lib/                         # Compiled JavaScript
 │   └── baileys.js
 │
 ├── bot_sessions/                # Session data (gitignored)
-│
-├── pairing-code.js              # Pairing code script
-├── test-bot.js                  # Test script
 │
 └── node_modules/                # Dependencies
 ```
@@ -128,7 +127,7 @@ WhatsApp bot core functionality:
 - [docs/api/](docs/api/) - Detailed API docs
 
 **Architecture:**
-- [docs/REFACTORING-SUMMARY.md](docs/REFACTORING-SUMMARY.md) - Modular architecture
+- [docs/PROJECT-STRUCTURE.md](PROJECT-STRUCTURE.md) - This file
 
 ---
 

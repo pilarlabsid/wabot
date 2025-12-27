@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.1.6-blue.svg)](https://www.typescriptlang.org/)
 [![Baileys](https://img.shields.io/badge/Baileys-6.4.0-green.svg)](https://github.com/WhiskeySockets/Baileys)
-[![Architecture](https://img.shields.io/badge/Architecture-MVC-brightgreen.svg)](./docs/REFACTORING-SUMMARY.md)
+[![Architecture](https://img.shields.io/badge/Architecture-MVC-brightgreen.svg)](./docs/PROJECT-STRUCTURE.md)
 
 A **production-ready** WhatsApp bot API built with TypeScript using [@whiskeysockets/baileys](https://github.com/WhiskeySockets/Baileys). Features **52 REST API endpoints**, **modular MVC architecture**, and **real-time webhooks**.
 
@@ -61,13 +61,13 @@ A **production-ready** WhatsApp bot API built with TypeScript using [@whiskeysoc
 - **Scalable** - Easy to add new features
 - **Maintainable** - Well-organized codebase
 
-### � Security
+### 🔐 Security
 - API Key authentication
 - Webhook signature verification
 - Error handling & validation
 - Session encryption
 
-### � Monitoring
+### 📊 Monitoring
 - Winston logging with timezone support
 - Real-time webhooks
 - System statistics
@@ -92,62 +92,45 @@ npm start
 
 ## 🚀 Quick Start
 
-### Using QR Code
+### 1. Start Server
 
-```javascript
-import { BaileysClass } from './lib/baileys.js';
-
-const bot = new BaileysClass({});
-
-bot.on('qr', (qr) => {
-    console.log('Scan this QR code:', qr);
-});
-
-bot.on('ready', () => {
-    console.log('Bot is ready!');
-});
-
-bot.on('message', async (msg) => {
-    console.log('Received:', msg.body);
-    await bot.sendText(msg.from, 'Hello!');
-});
-```
-
-### Using Pairing Code
-
-```javascript
-const bot = new BaileysClass({ 
-    usePairingCode: true, 
-    phoneNumber: '628XXXXXXXXX' 
-});
-
-bot.on('pairing_code', (code) => {
-    console.log('Pairing code:', code);
-});
-```
-
-### Using Pairing Code
-
-Alternative to QR Code - no camera needed!
-
-```javascript
-const bot = new BaileysClass({ 
-    usePairingCode: true, 
-    phoneNumber: '628XXXXXXXXX' 
-});
-
-bot.on('pairing_code', (code) => {
-    console.log('Pairing code:', code);
-    // Enter this code in WhatsApp
-});
-```
-
-**Quick start with pairing code:**
 ```bash
+# Start with QR Code (default)
+npm start
+
+# Or start with Pairing Code
 npm run pairing
 ```
 
+### 2. Connect WhatsApp
+
+**Option A: QR Code**
+- Scan QR code shown in terminal with WhatsApp
+- Go to WhatsApp → Settings → Linked Devices → Link a Device
+
+**Option B: Pairing Code**
+- Enter 8-digit code shown in terminal  
+- Go to WhatsApp → Settings → Linked Devices → Link with Phone Number
+
 See [docs/guides/PAIRING-CODE.md](./docs/guides/PAIRING-CODE.md) for detailed guide.
+
+### 3. Use REST API
+
+```bash
+# Send a message
+curl -X POST http://localhost:3000/api/messaging/send \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: daa8ce0ff449a97c15a9159156cfb20a48bda1037450457f1c26e19159d7818a" \
+  -d '{
+    "to": "628xxx@s.whatsapp.net",
+    "type": "text",
+    "text": "Hello from WA Bot!"
+  }'
+```
+
+**✅ Done! Your bot is ready to use.**
+
+---
 
 ## 📚 Documentation
 
@@ -165,368 +148,196 @@ Complete documentation available in the [`docs/`](./docs) folder:
 - [Testing Guide](./docs/guides/TESTING.md) - How to test the bot
 
 ### Architecture
-- [Refactoring Summary](./docs/REFACTORING-SUMMARY.md) - Modular architecture details
+- [Project Structure](./docs/PROJECT-STRUCTURE.md) - Complete project structure
 
 **See [docs/README.md](./docs/README.md) for complete documentation index.**
 
-## 📖 API Reference
+---
 
-### Core Methods
-
-#### Connection
-- `initBailey()` - Initialize WhatsApp connection
-- `setUpBaileySock()` - Setup connection socket
-- `handleConnectionUpdate()` - Handle connection updates
-
-#### Basic Messaging
-```javascript
-// Send text
-await bot.sendText('628xxx', 'Hello World');
-
-// Send image
-await bot.sendImage('628xxx', './image.jpg', 'Caption');
-
-// Send video
-await bot.sendVideo('628xxx', './video.mp4', 'Caption');
-
-// Send audio
-await bot.sendAudio('628xxx', './audio.mp3');
-
-// Send file
-await bot.sendFile('628xxx', './document.pdf');
-
-// Send sticker
-await bot.sendSticker('628xxx', 'https://example.com/sticker.gif', {
-    pack: 'My Pack',
-    author: 'Author'
-});
-
-// Send poll
-await bot.sendPoll('628xxx', 'Choose option', {
-    options: ['Option 1', 'Option 2', 'Option 3']
-});
-
-// Send location
-await bot.sendLocation('628xxx@s.whatsapp.net', -6.200000, 106.816666);
-
-// Send contact
-await bot.sendContact('628xxx@s.whatsapp.net', '+628111', 'John Doe');
-```
-
-#### 🆕 Interactive Features
-```javascript
-// Send reaction
-await bot.sendReaction('628xxx@s.whatsapp.net', messageKey, '❤️');
-
-// Send list menu
-await bot.sendList('628xxx', 'Menu Title', 'Choose an option', 'View Menu', [
-    {
-        title: 'Section 1',
-        rows: [
-            { title: 'Option 1', description: 'Description', rowId: '1' },
-            { title: 'Option 2', description: 'Description', rowId: '2' }
-        ]
-    }
-]);
-
-// Reply to message
-await bot.sendReply('628xxx', 'Thanks for your message!', quotedMessage);
-
-// Mention users
-await bot.sendMention('groupId@g.us', 'Hello @628111', ['628111@s.whatsapp.net']);
-
-// Delete message
-await bot.deleteMessage('628xxx@s.whatsapp.net', messageKey);
-
-// Edit message
-await bot.editMessage('628xxx@s.whatsapp.net', messageKey, 'Updated text');
-```
-
-#### 🚀 Advanced Features
-```javascript
-// Send template with buttons
-await bot.sendTemplate('628xxx', {
-    text: 'Check our website!',
-    footer: 'Powered by Bot',
-    buttons: [
-        { type: 'url', text: 'Visit', url: 'https://example.com' },
-        { type: 'call', text: 'Call Us', phoneNumber: '+628111' },
-        { type: 'quick_reply', text: 'Quick Reply' }
-    ]
-});
-
-// Send live location
-await bot.sendLiveLocation('628xxx@s.whatsapp.net', -6.200000, 106.816666, 3600);
-
-// Send multiple contacts
-await bot.sendContactsArray('628xxx@s.whatsapp.net', [
-    { displayName: 'John', phoneNumber: '+628111' },
-    { displayName: 'Jane', phoneNumber: '+628222' }
-]);
-
-// Send group invite
-await bot.sendGroupInvite('628xxx', 'groupId@g.us', 'inviteCode', 'Join us!');
-
-// Forward message
-await bot.forwardMessage('628xxx@s.whatsapp.net', messageObject);
-
-// Send view once media
-await bot.sendViewOnce('628xxx', './secret.jpg', 'View once!');
-
-// Pin message
-await bot.pinMessage('628xxx@s.whatsapp.net', messageKey, true);
-```
-
-## 🔌 REST API Endpoints
+## 🔌 REST API Overview
 
 All endpoints require API key authentication via `x-api-key` header.
 
+**Base URL:** `http://localhost:3000/api`  
 **API Key:** `daa8ce0ff449a97c15a9159156cfb20a48bda1037450457f1c26e19159d7818a`
 
-### Basic Endpoints
+### API Categories
 
-#### Send Message
+| Category | Endpoints | Documentation |
+|----------|-----------|---------------|
+| Connection | 5 | [Connection API](./docs/api/CONNECTION-API.md) |
+| Messaging | 10 | [API Summary](./docs/API-SUMMARY.md) |
+| Media | 7 | [Media API](./docs/api/MEDIA-API.md) |
+| Contacts | 8 | [Contact API](./docs/api/CONTACT-API.md) |
+| Groups | 14 | [API Summary](./docs/API-SUMMARY.md) |
+| Webhooks | 5 | [Webhook API](./docs/api/WEBHOOK-API.md) |
+| Bot Info | 3 | [API Summary](./docs/API-SUMMARY.md) |
+
+**Total: 52 Endpoints**
+
+### Quick API Examples
+
+#### Send Text Message
 ```bash
-POST /send-message
-Content-Type: application/json
-x-api-key: YOUR_API_KEY
-
+POST /api/messaging/send
 {
-  "number": "628xxx",
-  "message": "Hello World"
+  "to": "628xxx@s.whatsapp.net",
+  "type": "text",
+  "text": "Hello World!"
 }
 ```
 
-#### Send to Group
+#### Send Image
 ```bash
-POST /send-to-group
-Content-Type: application/json
-x-api-key: YOUR_API_KEY
-
+POST /api/media/image
 {
-  "groupId": "groupId@g.us",
-  "message": "Hello Group"
+  "to": "628xxx@s.whatsapp.net",
+  "image": "https://example.com/image.jpg",
+  "caption": "Check this out!"
 }
 ```
 
-### 🆕 Interactive Endpoints
-
-#### Send Reaction
+#### Get Connection Status
 ```bash
-POST /send-reaction
+GET /api/connection/status
+```
+
+#### Configure Webhook
+```bash
+POST /api/webhooks/configure
 {
-  "remoteJid": "628xxx@s.whatsapp.net",
-  "messageKey": {...},
-  "emoji": "👍"
+  "url": "https://your-server.com/webhook",
+  "events": ["message", "connection"],
+  "secret": "your-secret-key"
 }
 ```
 
-#### Send List
-```bash
-POST /send-list
-{
-  "number": "628xxx",
-  "title": "Menu",
-  "description": "Choose option",
-  "buttonText": "View",
-  "sections": [...]
-}
-```
+**See [docs/API-SUMMARY.md](./docs/API-SUMMARY.md) for complete API reference with all 52 endpoints.**
 
-#### Send Reply
-```bash
-POST /send-reply
-{
-  "number": "628xxx",
-  "message": "Thanks!",
-  "quotedMessage": {...}
-}
-```
-
-#### Send Mention
-```bash
-POST /send-mention
-{
-  "remoteJid": "groupId@g.us",
-  "message": "Hello @628xxx",
-  "mentions": ["628xxx@s.whatsapp.net"]
-}
-```
-
-#### Delete Message
-```bash
-POST /delete-message
-{
-  "remoteJid": "628xxx@s.whatsapp.net",
-  "messageKey": {...}
-}
-```
-
-#### Edit Message
-```bash
-POST /edit-message
-{
-  "remoteJid": "628xxx@s.whatsapp.net",
-  "messageKey": {...},
-  "newText": "Updated text"
-}
-```
-
-#### Send Template
-```bash
-POST /send-template
-{
-  "number": "628xxx",
-  "content": {
-    "text": "Hello",
-    "buttons": [...]
-  }
-}
-```
-
-#### Forward Message
-```bash
-POST /forward-message
-{
-  "toJid": "628xxx@s.whatsapp.net",
-  "message": {...}
-}
-```
-
-## 📝 Events
-
-```javascript
-bot.on('ready', () => {
-    // Bot is ready
-});
-
-bot.on('qr', (qr) => {
-    // QR code received
-});
-
-bot.on('pairing_code', (code) => {
-    // Pairing code received
-});
-
-bot.on('message', (msg) => {
-    // New message received
-    // msg.from - Sender ID
-    // msg.body - Message text
-    // msg.type - Message type (text, image, video, etc)
-});
-
-bot.on('auth_failure', (error) => {
-    // Authentication failed
-});
-```
-
-## 🛠️ Configuration
-
-### Constructor Options
-
-```javascript
-const bot = new BaileysClass({
-    name: 'bot',              // Session name (default: 'bot')
-    usePairingCode: false,    // Use pairing code instead of QR (default: false)
-    phoneNumber: null,        // Phone number for pairing code
-    gifPlayback: false,       // Enable GIF playback (default: false)
-    dir: './',                // Session directory (default: './')
-    debug: false              // Enable debug logging (default: false)
-});
-```
+---
 
 ## 📁 Project Structure
 
 ```
 wabot/
-├── src/
-│   ├── baileys.ts          # Main BaileysClass implementation
-│   └── utils.ts            # Utility functions
-├── lib/                    # Compiled JavaScript (generated)
-├── public/
-│   └── notification.ts     # REST API server
-├── package.json
-├── tsconfig.json
-└── README.md
+├── docs/                       # 📚 Documentation
+│   ├── api/                    # API endpoint docs
+│   └── guides/                 # How-to guides
+│
+├── public/                     # 🚀 Modular server
+│   ├── server.ts               # Main entry point
+│   ├── config/                 # Configuration
+│   ├── middleware/             # Express middleware
+│   ├── services/               # Business logic
+│   ├── controllers/            # Request handlers
+│   ├── routes/                 # Route definitions
+│   └── types/                  # TypeScript types
+│
+├── src/                        # 🔧 Core library
+│   ├── baileys.ts              # Baileys wrapper
+│   └── utils.ts                # Utilities
+│
+└── lib/                        # Compiled JavaScript
 ```
 
-## 🔧 Development
+See [docs/PROJECT-STRUCTURE.md](./docs/PROJECT-STRUCTURE.md) for detailed structure.
 
-### Build
-```bash
-npm run build
-```
+---
 
-### Start Server
-```bash
-npm start
-```
+## ⚙️ Configuration
 
 ### Environment Variables
+
 ```bash
-PORT=3000  # Server port (default: 3000)
+# Server Configuration
+PORT=3000                                    # Server port (default: 3000)
+API_KEY=your-api-key-here                   # API authentication key
+
+# WhatsApp Configuration  
+USE_PAIRING_CODE=false                      # Use pairing code (default: false)
+PHONE_NUMBER=628XXXXXXXXX                   # Phone number for pairing
+
+# Webhook Configuration (optional)
+WEBHOOK_URL=https://your-server.com/webhook
+WEBHOOK_SECRET=your-webhook-secret
 ```
 
-## 📊 Logging
+### API Key
 
-The bot uses Winston for logging with Jakarta timezone (GMT+7):
+Default API key: `daa8ce0ff449a97c15a9159156cfb20a48bda1037450457f1c26e19159d7818a`
+
+**⚠️ Change this in production!**
+
+---
+
+## 📊 Monitoring & Logging
+
+### Winston Logging
+
+Logs are stored in:
 - `combined.log` - All logs
 - `error.log` - Error logs only
 - Console output with colors
 
-## 🤝 Integration with bot-whatsapp
+### System Statistics
 
-This library can be used as a provider for [bot-whatsapp](https://bot-whatsapp.netlify.app/docs):
-
-```javascript
-const { BaileysClass } = require('./lib/baileys');
-const { createProvider } = require('@bot-whatsapp/bot');
-
-const adapterProvider = createProvider(BaileysClass);
-
-// With pairing code
-const adapterProvider = createProvider(BaileysClass, { 
-    usePairingCode: true, 
-    phoneNumber: '628XXXXXXXXX' 
-});
+```bash
+GET /api/bot/stats
 ```
+
+Returns:
+- Uptime
+- Memory usage
+- Message count
+- Connection status
+
+---
+
+## 🔒 Security
+
+### Authentication
+- API Key required for all endpoints
+- Header: `x-api-key: YOUR_API_KEY`
+
+### Webhook Security
+- HMAC-SHA256 signature verification
+- Secret key validation
+- Event filtering
+
+### Best Practices
+- Change default API key
+- Use HTTPS in production
+- Implement rate limiting
+- Validate all inputs
+
+---
 
 ## 🐛 Troubleshooting
 
-### TypeScript Errors in IDE
-If you see module import errors in your IDE, run:
+### Common Issues
+
+#### TypeScript Errors in IDE
 ```bash
 npm install
 ```
 
-These errors are normal in development environments without installed dependencies.
-
-### Connection Issues
+#### Connection Issues
 - Make sure WhatsApp is not connected on another device
 - Clear session folder: `rm -rf bot_sessions`
 - Try using pairing code instead of QR
 
-### Build Errors
+#### Build Errors
 ```bash
 # Clean and rebuild
 rm -rf lib/
 npm run build
 ```
 
-## 📄 License
+#### API Authentication Errors
+- Check `x-api-key` header is set correctly
+- Verify API key matches server configuration
 
-MIT License - see [LICENSE.md](LICENSE.md)
-
-## 👤 Author
-
-**Ujang Supriyadi**
-- GitHub: [@ujangsprr](https://github.com/ujangsprr)
-
-## 🙏 Acknowledgements
-
-This project was inspired by:
-- [Baileys](https://github.com/WhiskeySockets/Baileys) - WhatsApp Web API
-- [bot-whatsapp](https://github.com/codigoencasa/bot-whatsapp) - Bot framework
+---
 
 ## 🌟 Project Status
 
@@ -588,7 +399,7 @@ This project was inspired by:
 - [ ] **Error Tracking** - Sentry integration
 - [ ] **Performance Monitoring** - APM integration
 
-### � Phase 4: Developer Experience (Q4 2025)
+### 📅 Phase 4: Developer Experience (Q4 2025)
 
 #### SDK & Libraries
 - [ ] **JavaScript SDK** - Easy integration

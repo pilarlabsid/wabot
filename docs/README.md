@@ -18,8 +18,8 @@ Complete documentation for WhatsApp Bot API.
 - [Contact API](api/CONTACT-API.md) - Contact management endpoints
 - [Webhook API](api/WEBHOOK-API.md) - Webhook system documentation
 
-### Architecture
-- [Refactoring Summary](REFACTORING-SUMMARY.md) - Modular architecture details
+### Project Structure
+- [Project Structure](PROJECT-STRUCTURE.md) - Complete project organization
 
 ---
 
@@ -29,7 +29,6 @@ Complete documentation for WhatsApp Bot API.
 docs/
 ├── README.md (this file)
 ├── API-SUMMARY.md - Complete API overview
-├── REFACTORING-SUMMARY.md - Architecture details
 │
 ├── api/ - API endpoint documentation
 │   ├── CONNECTION-API.md
@@ -70,7 +69,7 @@ Request → Routes → Controllers → Services → Response
                   Middleware
 ```
 
-See [REFACTORING-SUMMARY.md](REFACTORING-SUMMARY.md) for details.
+See [API-SUMMARY.md](API-SUMMARY.md) for details.
 
 ---
 

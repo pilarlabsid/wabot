@@ -6,7 +6,7 @@
 
 #### 1. Jalankan Test Script
 ```bash
-node test-bot.js
+node examples/test-bot.js
 ```
 
 #### 2. Scan QR Code
@@ -156,7 +156,7 @@ node test-manual.js
 rm -rf bot_sessions/
 
 # Jalankan ulang
-node test-bot.js
+node examples/test-bot.js
 ```
 
 ### QR Code tidak muncul
@@ -168,7 +168,7 @@ npm install
 npm run build
 
 # Jalankan ulang
-node test-bot.js
+node examples/test-bot.js
 ```
 
 ### Error saat kirim pesan
@@ -216,7 +216,7 @@ Cara tercepat untuk test:
 
 ```bash
 # 1. Jalankan test script
-node test-bot.js
+node examples/test-bot.js
 
 # 2. Scan QR code
 
