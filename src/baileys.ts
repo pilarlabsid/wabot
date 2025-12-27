@@ -469,19 +469,42 @@ export class BaileysClass extends EventEmitter {
      * @example await sendLocation("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "xx.xxxx", "xx.xxxx", messages)
      */
 
-    sendLocation = async (remoteJid: string, latitude: string, longitude: string, messages: any = null): Promise<{ status: string }> => {
+    sendLocation = async (remoteJid: string, latitude: string, longitude: string, name: string | null = null, messages: any = null): Promise<{ status: string }> => {
         await this.vendor.sendMessage(
             remoteJid,
             {
                 location: {
                     degreesLatitude: latitude,
                     degreesLongitude: longitude,
+                    name: name
                 },
             },
             { quoted: messages }
         );
 
         return { status: 'success' }
+    }
+
+    /**
+     * @param {string} number
+     * @param {string} documentUrl
+     * @param {string} fileName
+     * @param {string} mimetype
+     * @param {any} messages
+     */
+    sendDocument = async (number: string, documentUrl: string, fileName: string, mimetype: string, messages: any = null): Promise<any> => {
+        try {
+            const numberClean = utils.formatPhone(number);
+            const fileDownloaded = await utils.generalDownload(documentUrl);
+            return this.vendor.sendMessage(numberClean, {
+                document: { url: fileDownloaded },
+                mimetype: mimetype,
+                fileName: fileName,
+            }, { quoted: messages });
+        } catch (error) {
+            console.error(`Error sending document: ${error}`);
+            throw error;
+        }
     }
 
     /**

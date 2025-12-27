@@ -49,9 +49,10 @@
   },
   "homepage": "https://github.com/pilarlabsid",
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/fluent-ffmpeg": "^2.1.21",
     "@types/mime-types": "^2.1.1",
-    "@types/node": "^20.4.5",
+    "@types/node": "^20.19.27",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }

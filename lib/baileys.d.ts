@@ -116,9 +116,17 @@ export declare class BaileysClass extends EventEmitter {
      * @param {any} messages
      * @example await sendLocation("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "xx.xxxx", "xx.xxxx", messages)
      */
-    sendLocation: (remoteJid: string, latitude: string, longitude: string, messages?: any) => Promise<{
+    sendLocation: (remoteJid: string, latitude: string, longitude: string, name?: string | null, messages?: any) => Promise<{
         status: string;
     }>;
+    /**
+     * @param {string} number
+     * @param {string} documentUrl
+     * @param {string} fileName
+     * @param {string} mimetype
+     * @param {any} messages
+     */
+    sendDocument: (number: string, documentUrl: string, fileName: string, mimetype: string, messages?: any) => Promise<any>;
     /**
      * @param {string} remoteJid
      * @param {string} contactNumber

@@ -11,7 +11,7 @@ export class MediaController {
         }
 
         try {
-            await botService.bot.sendImageMessage(number, imageUrl, caption);
+            await botService.bot.sendMedia(number, imageUrl, caption);
             logger.info(`Image sent to ${number}`);
             res.status(200).json({ success: true, message: 'Image sent successfully' });
         } catch (error: any) {
@@ -28,7 +28,7 @@ export class MediaController {
         }
 
         try {
-            await botService.bot.sendVideoMessage(number, videoUrl, caption);
+            await botService.bot.sendMedia(number, videoUrl, caption);
             logger.info(`Video sent to ${number}`);
             res.status(200).json({ success: true, message: 'Video sent successfully' });
         } catch (error: any) {
@@ -45,7 +45,7 @@ export class MediaController {
         }
 
         try {
-            await botService.bot.sendAudioMessage(number, audioUrl);
+            await botService.bot.sendMedia(number, audioUrl, '');
             logger.info(`Audio sent to ${number}`);
             res.status(200).json({ success: true, message: 'Audio sent successfully' });
         } catch (error: any) {
@@ -62,7 +62,7 @@ export class MediaController {
         }
 
         try {
-            await botService.bot.sendDocumentMessage(number, documentUrl, fileName, mimetype);
+            await botService.bot.sendDocument(number, documentUrl, fileName, mimetype);
             logger.info(`Document sent to ${number}`);
             res.status(200).json({ success: true, message: 'Document sent successfully' });
         } catch (error: any) {
@@ -79,7 +79,7 @@ export class MediaController {
         }
 
         try {
-            await botService.bot.sendStickerMessage(number, stickerUrl);
+            await botService.bot.sendSticker(number, stickerUrl, {});
             logger.info(`Sticker sent to ${number}`);
             res.status(200).json({ success: true, message: 'Sticker sent successfully' });
         } catch (error: any) {
@@ -98,7 +98,7 @@ export class MediaController {
         }
 
         try {
-            await botService.bot.sendLocationMessage(number, latitude, longitude, name);
+            await botService.bot.sendLocation(number, latitude, longitude, name);
             logger.info(`Location sent to ${number}`);
             res.status(200).json({ success: true, message: 'Location sent successfully' });
         } catch (error: any) {
@@ -117,7 +117,7 @@ export class MediaController {
         }
 
         try {
-            await botService.bot.sendContactMessage(number, contactName, contactNumber);
+            await botService.bot.sendContact(number, contactNumber, contactName);
             logger.info(`Contact sent to ${number}`);
             res.status(200).json({ success: true, message: 'Contact sent successfully' });
         } catch (error: any) {

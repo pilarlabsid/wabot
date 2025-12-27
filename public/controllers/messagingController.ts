@@ -11,7 +11,7 @@ export class MessagingController {
         }
 
         try {
-            await botService.bot.sendTextMessage(number, message);
+            await botService.bot.sendText(number, message);
             logger.info(`Message sent to ${number}`);
             res.status(200).json({ success: true, message: 'Message sent successfully' });
         } catch (error: any) {
@@ -28,7 +28,7 @@ export class MessagingController {
         }
 
         try {
-            await botService.bot.sendTextMessage(groupId, message);
+            await botService.bot.sendText(groupId, message);
             logger.info(`Message sent to group ${groupId}`);
             res.status(200).json({ success: true, message: 'Message sent to group successfully' });
         } catch (error: any) {
@@ -38,14 +38,14 @@ export class MessagingController {
     }
 
     async sendReaction(req: Request, res: Response) {
-        const { messageId, emoji } = req.body;
+        const { number, messageId, emoji } = req.body;
 
-        if (!messageId || !emoji) {
-            return res.status(400).json({ error: 'messageId and emoji are required' });
+        if (!number || !messageId || !emoji) {
+            return res.status(400).json({ error: 'number, messageId and emoji are required' });
         }
 
         try {
-            await botService.bot.sendReaction(messageId, emoji);
+            await botService.bot.sendReaction(number, { remoteJid: number, id: messageId, fromMe: false }, emoji);
             logger.info(`Reaction sent: ${emoji}`);
             res.status(200).json({ success: true, message: 'Reaction sent successfully' });
         } catch (error: any) {
@@ -64,7 +64,7 @@ export class MessagingController {
         }
 
         try {
-            await botService.bot.sendListMessage(number, title, buttonText, sections);
+            await botService.bot.sendList(number, title, '', buttonText, sections);
             logger.info(`List message sent to ${number}`);
             res.status(200).json({ success: true, message: 'List message sent successfully' });
         } catch (error: any) {
@@ -102,7 +102,7 @@ export class MessagingController {
         }
 
         try {
-            await botService.bot.sendMentionMessage(groupId, message, mentions);
+            await botService.bot.sendMention(groupId, message, mentions);
             logger.info(`Mention message sent to ${groupId}`);
             res.status(200).json({ success: true, message: 'Mention sent successfully' });
         } catch (error: any) {
@@ -112,14 +112,14 @@ export class MessagingController {
     }
 
     async deleteMessage(req: Request, res: Response) {
-        const { messageId } = req.body;
+        const { number, messageId } = req.body;
 
-        if (!messageId) {
-            return res.status(400).json({ error: 'messageId is required' });
+        if (!number || !messageId) {
+            return res.status(400).json({ error: 'number and messageId is required' });
         }
 
         try {
-            await botService.bot.deleteMessage(messageId);
+            await botService.bot.deleteMessage(number, { remoteJid: number, id: messageId, fromMe: true });
             logger.info(`Message deleted: ${messageId}`);
             res.status(200).json({ success: true, message: 'Message deleted successfully' });
         } catch (error: any) {
@@ -129,14 +129,14 @@ export class MessagingController {
     }
 
     async editMessage(req: Request, res: Response) {
-        const { messageId, newText } = req.body;
+        const { number, messageId, newText } = req.body;
 
-        if (!messageId || !newText) {
-            return res.status(400).json({ error: 'messageId and newText are required' });
+        if (!number || !messageId || !newText) {
+            return res.status(400).json({ error: 'number, messageId and newText are required' });
         }
 
         try {
-            await botService.bot.editMessage(messageId, newText);
+            await botService.bot.editMessage(number, { remoteJid: number, id: messageId, fromMe: true }, newText);
             logger.info(`Message edited: ${messageId}`);
             res.status(200).json({ success: true, message: 'Message edited successfully' });
         } catch (error: any) {
@@ -153,7 +153,7 @@ export class MessagingController {
         }
 
         try {
-            await botService.bot.sendTemplateMessage(number, template);
+            await botService.bot.sendTemplate(number, template);
             logger.info(`Template sent to ${number}`);
             res.status(200).json({ success: true, message: 'Template sent successfully' });
         } catch (error: any) {

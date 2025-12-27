@@ -61,7 +61,7 @@ export class ConnectionController {
 
     async disconnect(req: Request, res: Response) {
         try {
-            await botService.bot.logout();
+            botService.bot.clearSessionAndRestart();
             logger.info('Bot disconnected successfully');
             res.json({
                 success: true,

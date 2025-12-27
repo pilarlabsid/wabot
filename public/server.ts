@@ -29,6 +29,6 @@ app.listen(port, () => {
 // Graceful shutdown
 process.on('SIGINT', async () => {
     logger.info('Shutting down gracefully...');
-    await botService.bot.logout();
+    botService.bot.clearSessionAndRestart();
     process.exit(0);
 });
