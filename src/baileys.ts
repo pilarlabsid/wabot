@@ -6,7 +6,6 @@ import makeWASocket, {
     fetchLatestBaileysVersion,
     getAggregateVotesInPollMessage,
     makeCacheableSignalKeyStore,
-    makeInMemoryStore,
     useMultiFileAuthState,
     Browsers,
     proto,
@@ -27,6 +26,9 @@ import { join } from 'path';
 
 
 import fs from 'fs-extra';
+
+// Use require for makeInMemoryStore to avoid import issues
+const { makeInMemoryStore } = require('@whiskeysockets/baileys');
 
 interface Args {
     debug?: boolean;
@@ -583,6 +585,456 @@ export class BaileysClass extends EventEmitter {
             throw error;
         }
     };
+
+    /**
+     * ========================================
+     * PHASE 1: HIGH PRIORITY FEATURES
+     * ========================================
+     */
+
+    /**
+     * Mengirim reaksi emoji ke pesan tertentu
+     * 
+     * @param {string} remoteJid - ID chat atau grup
+     * @param {WAMessageKey} messageKey - Key dari pesan yang akan direaksi
+     * @param {string} emoji - Emoji yang akan dikirim (contoh: '👍', '❤️', '' untuk hapus reaksi)
+     * @example await sendReaction("628xxx@s.whatsapp.net", messageKey, "👍")
+     * @returns {Promise<void>}
+     */
+    sendReaction = async (remoteJid: string, messageKey: WAMessageKey, emoji: string): Promise<void> => {
+        const reactionMessage = {
+            react: {
+                text: emoji,
+                key: messageKey
+            }
+        };
+        await this.vendor.sendMessage(remoteJid, reactionMessage);
+    }
+
+    /**
+     * Mengirim list/menu pilihan yang lebih rapi dari buttons
+     * 
+     * @param {string} number - Nomor tujuan
+     * @param {string} title - Judul pesan
+     * @param {string} description - Deskripsi pesan
+     * @param {string} buttonText - Text tombol untuk membuka list
+     * @param {Array} sections - Array section dengan rows
+     * @example await sendList("628xxx", "Menu", "Pilih menu", "Lihat Menu", [{title: "Section 1", rows: [{title: "Option 1", rowId: "1"}]}])
+     * @returns {Promise<any>}
+     */
+    sendList = async (
+        number: string,
+        title: string,
+        description: string,
+        buttonText: string,
+        sections: Array<{
+            title: string,
+            rows: Array<{
+                title: string,
+                description?: string,
+                rowId: string
+            }>
+        }>
+    ): Promise<any> => {
+        const numberClean = utils.formatPhone(number);
+
+        const listMessage = {
+            text: description,
+            footer: '',
+            title: title,
+            buttonText: buttonText,
+            sections: sections
+        };
+
+        return this.vendor.sendMessage(numberClean, listMessage);
+    }
+
+    /**
+     * Membalas pesan tertentu dengan konteks (quote)
+     * 
+     * @param {string} number - Nomor tujuan
+     * @param {string} message - Pesan balasan
+     * @param {any} quotedMessage - Pesan yang akan di-quote
+     * @example await sendReply("628xxx", "Terima kasih!", messageObject)
+     * @returns {Promise<any>}
+     */
+    sendReply = async (number: string, message: string, quotedMessage: any): Promise<any> => {
+        const numberClean = utils.formatPhone(number);
+        return this.vendor.sendMessage(numberClean, {
+            text: message
+        }, {
+            quoted: quotedMessage
+        });
+    }
+
+    /**
+     * Mengirim pesan dengan mention/tag user
+     * 
+     * @param {string} remoteJid - ID grup
+     * @param {string} message - Pesan (harus include @nomor untuk setiap mention)
+     * @param {string[]} mentions - Array nomor yang di-mention (format: "628xxx@s.whatsapp.net")
+     * @example await sendMention("groupId@g.us", "Hello @628xxx", ["628xxx@s.whatsapp.net"])
+     * @returns {Promise<any>}
+     */
+    sendMention = async (remoteJid: string, message: string, mentions: string[]): Promise<any> => {
+        return this.vendor.sendMessage(remoteJid, {
+            text: message,
+            mentions: mentions
+        });
+    }
+
+    /**
+     * Menghapus pesan yang sudah dikirim
+     * 
+     * @param {string} remoteJid - ID chat
+     * @param {WAMessageKey} messageKey - Key pesan yang akan dihapus
+     * @example await deleteMessage("628xxx@s.whatsapp.net", messageKey)
+     * @returns {Promise<void>}
+     */
+    deleteMessage = async (remoteJid: string, messageKey: WAMessageKey): Promise<void> => {
+        await this.vendor.sendMessage(remoteJid, {
+            delete: messageKey
+        });
+    }
+
+    /**
+     * Mengedit pesan yang sudah dikirim
+     * 
+     * @param {string} remoteJid - ID chat
+     * @param {WAMessageKey} messageKey - Key pesan yang akan diedit
+     * @param {string} newText - Text baru
+     * @example await editMessage("628xxx@s.whatsapp.net", messageKey, "Updated text")
+     * @returns {Promise<void>}
+     */
+    editMessage = async (remoteJid: string, messageKey: WAMessageKey, newText: string): Promise<void> => {
+        await this.vendor.sendMessage(remoteJid, {
+            text: newText,
+            edit: messageKey
+        });
+    }
+
+    /**
+     * ========================================
+     * PHASE 2: MEDIUM PRIORITY FEATURES
+     * ========================================
+     */
+
+    /**
+     * Mengirim template message dengan berbagai tipe button
+     * 
+     * @param {string} number - Nomor tujuan
+     * @param {object} content - Content template
+     * @example await sendTemplate("628xxx", {text: "Hello", footer: "Footer", buttons: [{type: 'url', text: 'Visit', url: 'https://example.com'}]})
+     * @returns {Promise<any>}
+     */
+    sendTemplate = async (
+        number: string,
+        content: {
+            text: string,
+            footer?: string,
+            buttons: Array<{
+                type: 'url' | 'call' | 'quick_reply',
+                text: string,
+                url?: string,
+                phoneNumber?: string
+            }>
+        }
+    ): Promise<any> => {
+        const numberClean = utils.formatPhone(number);
+
+        const templateButtons = content.buttons.map((btn, i) => {
+            if (btn.type === 'url') {
+                return { index: i, urlButton: { displayText: btn.text, url: btn.url } };
+            } else if (btn.type === 'call') {
+                return { index: i, callButton: { displayText: btn.text, phoneNumber: btn.phoneNumber } };
+            } else {
+                return { index: i, quickReplyButton: { displayText: btn.text, id: `btn-${i}` } };
+            }
+        });
+
+        const templateMessage = {
+            text: content.text,
+            footer: content.footer || '',
+            templateButtons: templateButtons
+        };
+
+        return this.vendor.sendMessage(numberClean, templateMessage);
+    }
+
+    /**
+     * Mengirim interactive message modern dengan header media
+     * 
+     * @param {string} number - Nomor tujuan
+     * @param {object} interactive - Interactive content
+     * @example await sendInteractive("628xxx", {header: {type: 'text', content: 'Title'}, body: 'Message', footer: 'Footer'})
+     * @returns {Promise<any>}
+     */
+    sendInteractive = async (
+        number: string,
+        interactive: {
+            header?: { type: 'text' | 'image' | 'video' | 'document', content: string },
+            body: string,
+            footer?: string,
+            buttons?: Array<{ buttonId: string, buttonText: { displayText: string }, type: number }>
+        }
+    ): Promise<any> => {
+        const numberClean = utils.formatPhone(number);
+
+        let headerContent: any = {};
+        if (interactive.header) {
+            if (interactive.header.type === 'text') {
+                headerContent = { hasMediaAttachment: false, title: interactive.header.content };
+            } else if (interactive.header.type === 'image') {
+                headerContent = { hasMediaAttachment: true, imageMessage: { url: interactive.header.content } };
+            } else if (interactive.header.type === 'video') {
+                headerContent = { hasMediaAttachment: true, videoMessage: { url: interactive.header.content } };
+            }
+        }
+
+        const interactiveMessage = {
+            text: interactive.body,
+            footer: interactive.footer || '',
+            header: headerContent,
+            buttons: interactive.buttons || []
+        };
+
+        return this.vendor.sendMessage(numberClean, interactiveMessage);
+    }
+
+    /**
+     * Mengirim live location yang update otomatis
+     * 
+     * @param {string} remoteJid - ID chat atau grup
+     * @param {number} latitude - Latitude
+     * @param {number} longitude - Longitude
+     * @param {number} durationSeconds - Durasi live location (default: 3600 = 1 jam)
+     * @example await sendLiveLocation("628xxx@s.whatsapp.net", -6.200000, 106.816666, 3600)
+     * @returns {Promise<any>}
+     */
+    sendLiveLocation = async (
+        remoteJid: string,
+        latitude: number,
+        longitude: number,
+        durationSeconds: number = 3600
+    ): Promise<any> => {
+        return this.vendor.sendMessage(remoteJid, {
+            liveLocationMessage: {
+                degreesLatitude: latitude,
+                degreesLongitude: longitude,
+                accuracyInMeters: 0,
+                speedInMps: 0,
+                degreesClockwiseFromMagneticNorth: 0,
+                caption: '',
+                sequenceNumber: 0,
+                timeOffset: durationSeconds,
+                jpegThumbnail: null
+            }
+        });
+    }
+
+    /**
+     * Mengirim banyak kontak sekaligus
+     * 
+     * @param {string} remoteJid - ID chat atau grup
+     * @param {Array} contacts - Array kontak
+     * @example await sendContactsArray("628xxx@s.whatsapp.net", [{displayName: "John", phoneNumber: "+628111"}])
+     * @returns {Promise<any>}
+     */
+    sendContactsArray = async (
+        remoteJid: string,
+        contacts: Array<{
+            displayName: string,
+            phoneNumber: string
+        }>
+    ): Promise<any> => {
+        const vCards = contacts.map(contact => {
+            const cleanNumber = contact.phoneNumber.replace(/ /g, '');
+            const waid = cleanNumber.replace('+', '');
+            return (
+                'BEGIN:VCARD\n' +
+                'VERSION:3.0\n' +
+                `FN:${contact.displayName}\n` +
+                'ORG:;\n' +
+                `TEL;type=CELL;type=VOICE;waid=${waid}:${cleanNumber}\n` +
+                'END:VCARD'
+            );
+        });
+
+        return this.vendor.sendMessage(remoteJid, {
+            contacts: {
+                displayName: `${contacts.length} contacts`,
+                contacts: vCards.map(vcard => ({ vcard }))
+            }
+        });
+    }
+
+    /**
+     * Mengirim undangan grup WhatsApp
+     * 
+     * @param {string} number - Nomor tujuan
+     * @param {string} groupJid - ID grup
+     * @param {string} inviteCode - Kode undangan grup
+     * @param {string} caption - Caption pesan (optional)
+     * @example await sendGroupInvite("628xxx", "groupId@g.us", "inviteCode123", "Join our group!")
+     * @returns {Promise<any>}
+     */
+    sendGroupInvite = async (
+        number: string,
+        groupJid: string,
+        inviteCode: string,
+        caption?: string
+    ): Promise<any> => {
+        const numberClean = utils.formatPhone(number);
+
+        return this.vendor.sendMessage(numberClean, {
+            groupInviteMessage: {
+                groupJid: groupJid,
+                inviteCode: inviteCode,
+                inviteExpiration: Date.now() + (3 * 24 * 60 * 60 * 1000), // 3 days
+                groupName: '',
+                caption: caption || 'Join our group',
+                jpegThumbnail: null
+            }
+        });
+    }
+
+    /**
+     * Forward pesan ke chat lain
+     * 
+     * @param {string} toJid - ID chat tujuan
+     * @param {any} message - Pesan yang akan di-forward
+     * @example await forwardMessage("628xxx@s.whatsapp.net", messageObject)
+     * @returns {Promise<any>}
+     */
+    forwardMessage = async (toJid: string, message: any): Promise<any> => {
+        return this.vendor.sendMessage(toJid, {
+            forward: message
+        });
+    }
+
+    /**
+     * ========================================
+     * PHASE 3: ADVANCED FEATURES
+     * ========================================
+     */
+
+    /**
+     * Mengirim media yang hanya bisa dilihat sekali (view once)
+     * 
+     * @param {string} number - Nomor tujuan
+     * @param {string} mediaPath - Path atau URL media
+     * @param {string} caption - Caption (optional)
+     * @example await sendViewOnce("628xxx", "./image.jpg", "Secret photo")
+     * @returns {Promise<any>}
+     */
+    sendViewOnce = async (number: string, mediaPath: string, caption?: string): Promise<any> => {
+        const numberClean = utils.formatPhone(number);
+        const fileDownloaded = await utils.generalDownload(mediaPath);
+        const mimeType = mime.lookup(fileDownloaded);
+
+        let messageContent: any = {};
+
+        if (typeof mimeType === 'string' && mimeType.includes('image')) {
+            messageContent = {
+                image: readFileSync(fileDownloaded),
+                caption: caption || '',
+                viewOnce: true
+            };
+        } else if (typeof mimeType === 'string' && mimeType.includes('video')) {
+            messageContent = {
+                video: readFileSync(fileDownloaded),
+                caption: caption || '',
+                viewOnce: true
+            };
+        } else {
+            throw new Error('View once only supports image or video');
+        }
+
+        return this.vendor.sendMessage(numberClean, messageContent);
+    }
+
+    /**
+     * Mengirim katalog produk WhatsApp Business
+     * 
+     * @param {string} number - Nomor tujuan
+     * @param {object} product - Data produk
+     * @example await sendProduct("628xxx", {productId: "123", title: "Product", description: "Desc", price: "100000", imageUrl: "url"})
+     * @returns {Promise<any>}
+     */
+    sendProduct = async (
+        number: string,
+        product: {
+            productId: string,
+            title: string,
+            description: string,
+            price: string,
+            imageUrl: string
+        }
+    ): Promise<any> => {
+        const numberClean = utils.formatPhone(number);
+
+        return this.vendor.sendMessage(numberClean, {
+            productMessage: {
+                product: {
+                    productId: product.productId,
+                    title: product.title,
+                    description: product.description,
+                    currencyCode: 'IDR',
+                    priceAmount1000: parseInt(product.price) * 1000,
+                    productImageCount: 1
+                },
+                businessOwnerJid: this.vendor.user.id
+            }
+        });
+    }
+
+    /**
+     * Mengirim order atau invoice
+     * 
+     * @param {string} number - Nomor tujuan
+     * @param {object} order - Data order
+     * @example await sendOrder("628xxx", {orderId: "ORD123", items: [{name: "Item", price: 10000, quantity: 2}], total: 20000})
+     * @returns {Promise<any>}
+     */
+    sendOrder = async (
+        number: string,
+        order: {
+            orderId: string,
+            items: Array<{ name: string, price: number, quantity: number }>,
+            total: number
+        }
+    ): Promise<any> => {
+        const numberClean = utils.formatPhone(number);
+
+        const itemsText = order.items.map(item =>
+            `${item.name} x${item.quantity} - Rp ${item.price.toLocaleString()}`
+        ).join('\n');
+
+        const orderMessage = `*ORDER #${order.orderId}*\n\n${itemsText}\n\n*Total: Rp ${order.total.toLocaleString()}*`;
+
+        return this.vendor.sendMessage(numberClean, {
+            text: orderMessage
+        });
+    }
+
+    /**
+     * Pin atau unpin pesan di chat
+     * 
+     * @param {string} remoteJid - ID chat
+     * @param {WAMessageKey} messageKey - Key pesan yang akan di-pin
+     * @param {boolean} pin - true untuk pin, false untuk unpin
+     * @example await pinMessage("628xxx@s.whatsapp.net", messageKey, true)
+     * @returns {Promise<void>}
+     */
+    pinMessage = async (remoteJid: string, messageKey: WAMessageKey, pin: boolean = true): Promise<void> => {
+        await this.vendor.sendMessage(remoteJid, {
+            pinInChat: {
+                key: messageKey,
+                type: pin ? 1 : 0,
+                senderTimestampMs: Date.now()
+            }
+        });
+    }
 }
 
 

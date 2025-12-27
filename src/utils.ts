@@ -158,7 +158,7 @@ const utils = {
         await utils.cleanImage(PATH_QR)
     },
     cleanImage: async (FROM: string): Promise<boolean> => {
-        const readBuffer = () => {
+        const readBuffer = (): Promise<Buffer> => {
             return new Promise((resolve, reject) => {
                 readFile(FROM, (err, data) => {
                     if (err) reject(err)
@@ -168,7 +168,7 @@ const utils = {
             })
         }
 
-        const imgBuffer = await readBuffer()
+        const imgBuffer: Buffer = await readBuffer()
 
         return new Promise((resolve, reject) => {
             sharp(imgBuffer)

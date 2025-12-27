@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ujangsprr"
+    "url": "git+https://github.com/pilarlabsid"
   },
   "keywords": [
     "bot",
@@ -26,12 +26,14 @@
   ],
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@types/node-cache": "^4.1.3",
     "@whiskeysockets/baileys": "^6.4.0",
     "body-parser": "^1.20.2",
     "crypto": "^1.0.1",
     "express": "^4.19.2",
     "fluent-ffmpeg": "^2.1.2",
     "moment-timezone": "^0.5.46",
+    "node-cache": "^5.1.2",
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
     "wa-sticker-formatter": "^4.4.4",
@@ -40,9 +42,9 @@
   "author": "Ujang Supriyadi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ujangsprr"
+    "url": "https://github.com/pilarlabsid"
   },
-  "homepage": "https://github.com/ujangsprr",
+  "homepage": "https://github.com/pilarlabsid",
   "devDependencies": {
     "@types/fluent-ffmpeg": "^2.1.21",
     "@types/mime-types": "^2.1.1",

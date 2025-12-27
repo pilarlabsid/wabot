@@ -1,4 +1,3 @@
-/// <reference types="node" />
 declare const utils: {
     formatPhone: (contact: string, full?: boolean) => string;
     generateRefprovider: (prefix?: string) => string;
@@ -13,7 +12,7 @@ declare const utils: {
     convertAudio: (filePath?: string, format?: string) => Promise<string>;
     fileTypeFromFile: (response: {
         headers: {
-            'content-type': string;
+            "content-type": string;
         };
     }) => Promise<{
         type: string;
