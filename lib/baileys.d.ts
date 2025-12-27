@@ -375,5 +375,142 @@ export declare class BaileysClass extends EventEmitter {
      * @returns {Promise<void>}
      */
     pinMessage: (remoteJid: string, messageKey: WAMessageKey, pin?: boolean) => Promise<void>;
+    /**
+     * Get all contacts
+     * @returns {Promise<any>} List of contacts
+     */
+    getContacts: () => Promise<any>;
+    /**
+     * Get contact info by JID
+     * @param {string} jid - Contact JID
+     * @returns {Promise<any>} Contact info
+     */
+    getContactInfo: (jid: string) => Promise<any>;
+    /**
+     * Block a contact
+     * @param {string} jid - Contact JID to block
+     * @returns {Promise<any>}
+     */
+    blockContact: (jid: string) => Promise<any>;
+    /**
+     * Unblock a contact
+     * @param {string} jid - Contact JID to unblock
+     * @returns {Promise<any>}
+     */
+    unblockContact: (jid: string) => Promise<any>;
+    /**
+     * Get blocked contacts list
+     * @returns {Promise<any>} List of blocked contacts
+     */
+    getBlockedContacts: () => Promise<any>;
+    /**
+     * Update profile name
+     * @param {string} name - New profile name
+     * @returns {Promise<any>}
+     */
+    updateProfileName: (name: string) => Promise<any>;
+    /**
+     * Update profile status
+     * @param {string} status - New status
+     * @returns {Promise<any>}
+     */
+    updateProfileStatus: (status: string) => Promise<any>;
+    /**
+     * Get profile picture URL
+     * @param {string} jid - Contact JID
+     * @returns {Promise<string>} Profile picture URL
+     */
+    getProfilePicture: (jid: string) => Promise<string>;
+    /**
+     * Get all groups
+     * @returns {Promise<any>} List of groups
+     */
+    getGroups: () => Promise<any>;
+    /**
+     * Get group info
+     * @param {string} groupId - Group ID
+     * @returns {Promise<any>} Group info
+     */
+    getGroupInfo: (groupId: string) => Promise<any>;
+    /**
+     * Create new group
+     * @param {string} subject - Group name
+     * @param {string[]} participants - Array of participant JIDs
+     * @returns {Promise<any>} Created group info
+     */
+    createGroup: (subject: string, participants: string[]) => Promise<any>;
+    /**
+     * Add participant to group
+     * @param {string} groupId - Group ID
+     * @param {string[]} participants - Array of participant JIDs to add
+     * @returns {Promise<any>}
+     */
+    addParticipant: (groupId: string, participants: string[]) => Promise<any>;
+    /**
+     * Remove participant from group
+     * @param {string} groupId - Group ID
+     * @param {string[]} participants - Array of participant JIDs to remove
+     * @returns {Promise<any>}
+     */
+    removeParticipant: (groupId: string, participants: string[]) => Promise<any>;
+    /**
+     * Leave group
+     * @param {string} groupId - Group ID
+     * @returns {Promise<any>}
+     */
+    leaveGroup: (groupId: string) => Promise<any>;
+    /**
+     * Update group subject/name
+     * @param {string} groupId - Group ID
+     * @param {string} subject - New group name
+     * @returns {Promise<any>}
+     */
+    updateGroupSubject: (groupId: string, subject: string) => Promise<any>;
+    /**
+     * Update group description
+     * @param {string} groupId - Group ID
+     * @param {string} description - New description
+     * @returns {Promise<any>}
+     */
+    updateGroupDescription: (groupId: string, description: string) => Promise<any>;
+    /**
+     * Get group participants
+     * @param {string} groupId - Group ID
+     * @returns {Promise<any>} List of participants
+     */
+    getGroupParticipants: (groupId: string) => Promise<any>;
+    /**
+     * Promote participant to admin
+     * @param {string} groupId - Group ID
+     * @param {string[]} participants - Array of participant JIDs
+     * @returns {Promise<any>}
+     */
+    promoteToAdmin: (groupId: string, participants: string[]) => Promise<any>;
+    /**
+     * Demote admin to participant
+     * @param {string} groupId - Group ID
+     * @param {string[]} participants - Array of participant JIDs
+     * @returns {Promise<any>}
+     */
+    demoteAdmin: (groupId: string, participants: string[]) => Promise<any>;
+    /**
+     * Update group settings (who can send messages, edit info, etc)
+     * @param {string} groupId - Group ID
+     * @param {string} setting - 'announcement' or 'not_announcement'
+     * @returns {Promise<any>}
+     */
+    updateGroupSettings: (groupId: string, setting: "announcement" | "not_announcement") => Promise<any>;
+    /**
+     * Get group invite code
+     * @param {string} groupId - Group ID
+     * @returns {Promise<string>} Invite code
+     */
+    getGroupInviteCode: (groupId: string) => Promise<string>;
+    /**
+     * Revoke group invite code
+     * @param {string} groupId - Group ID
+     * @returns {Promise<string>} New invite code
+     */
+    revokeGroupInviteCode: (groupId: string) => Promise<string>;
 }
 export {};

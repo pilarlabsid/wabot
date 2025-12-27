@@ -1031,6 +1031,226 @@ export class BaileysClass extends EventEmitter {
             }
         });
     }
+
+    // ========================================
+    // CONTACT MANAGEMENT METHODS
+    // ========================================
+
+    /**
+     * Get all contacts
+     * @returns {Promise<any>} List of contacts
+     */
+    getContacts = async (): Promise<any> => {
+        const contacts = await this.vendor.store?.contacts || {};
+        return Object.values(contacts);
+    }
+
+    /**
+     * Get contact info by JID
+     * @param {string} jid - Contact JID
+     * @returns {Promise<any>} Contact info
+     */
+    getContactInfo = async (jid: string): Promise<any> => {
+        return await this.vendor.store?.contacts?.[jid] || null;
+    }
+
+    /**
+     * Block a contact
+     * @param {string} jid - Contact JID to block
+     * @returns {Promise<any>}
+     */
+    blockContact = async (jid: string): Promise<any> => {
+        return await this.vendor.updateBlockStatus(jid, 'block');
+    }
+
+    /**
+     * Unblock a contact
+     * @param {string} jid - Contact JID to unblock
+     * @returns {Promise<any>}
+     */
+    unblockContact = async (jid: string): Promise<any> => {
+        return await this.vendor.updateBlockStatus(jid, 'unblock');
+    }
+
+    /**
+     * Get blocked contacts list
+     * @returns {Promise<any>} List of blocked contacts
+     */
+    getBlockedContacts = async (): Promise<any> => {
+        const blocklist = await this.vendor.fetchBlocklist();
+        return blocklist || [];
+    }
+
+    /**
+     * Update profile name
+     * @param {string} name - New profile name
+     * @returns {Promise<any>}
+     */
+    updateProfileName = async (name: string): Promise<any> => {
+        return await this.vendor.updateProfileName(name);
+    }
+
+    /**
+     * Update profile status
+     * @param {string} status - New status
+     * @returns {Promise<any>}
+     */
+    updateProfileStatus = async (status: string): Promise<any> => {
+        return await this.vendor.updateProfileStatus(status);
+    }
+
+    /**
+     * Get profile picture URL
+     * @param {string} jid - Contact JID
+     * @returns {Promise<string>} Profile picture URL
+     */
+    getProfilePicture = async (jid: string): Promise<string> => {
+        try {
+            const url = await this.vendor.profilePictureUrl(jid, 'image');
+            return url;
+        } catch {
+            return '';
+        }
+    }
+
+    // ========================================
+    // GROUP MANAGEMENT METHODS
+    // ========================================
+
+    /**
+     * Get all groups
+     * @returns {Promise<any>} List of groups
+     */
+    getGroups = async (): Promise<any> => {
+        const groups = await this.vendor.groupFetchAllParticipating();
+        return Object.values(groups);
+    }
+
+    /**
+     * Get group info
+     * @param {string} groupId - Group ID
+     * @returns {Promise<any>} Group info
+     */
+    getGroupInfo = async (groupId: string): Promise<any> => {
+        return await this.vendor.groupMetadata(groupId);
+    }
+
+    /**
+     * Create new group
+     * @param {string} subject - Group name
+     * @param {string[]} participants - Array of participant JIDs
+     * @returns {Promise<any>} Created group info
+     */
+    createGroup = async (subject: string, participants: string[]): Promise<any> => {
+        return await this.vendor.groupCreate(subject, participants);
+    }
+
+    /**
+     * Add participant to group
+     * @param {string} groupId - Group ID
+     * @param {string[]} participants - Array of participant JIDs to add
+     * @returns {Promise<any>}
+     */
+    addParticipant = async (groupId: string, participants: string[]): Promise<any> => {
+        return await this.vendor.groupParticipantsUpdate(groupId, participants, 'add');
+    }
+
+    /**
+     * Remove participant from group
+     * @param {string} groupId - Group ID
+     * @param {string[]} participants - Array of participant JIDs to remove
+     * @returns {Promise<any>}
+     */
+    removeParticipant = async (groupId: string, participants: string[]): Promise<any> => {
+        return await this.vendor.groupParticipantsUpdate(groupId, participants, 'remove');
+    }
+
+    /**
+     * Leave group
+     * @param {string} groupId - Group ID
+     * @returns {Promise<any>}
+     */
+    leaveGroup = async (groupId: string): Promise<any> => {
+        return await this.vendor.groupLeave(groupId);
+    }
+
+    /**
+     * Update group subject/name
+     * @param {string} groupId - Group ID
+     * @param {string} subject - New group name
+     * @returns {Promise<any>}
+     */
+    updateGroupSubject = async (groupId: string, subject: string): Promise<any> => {
+        return await this.vendor.groupUpdateSubject(groupId, subject);
+    }
+
+    /**
+     * Update group description
+     * @param {string} groupId - Group ID
+     * @param {string} description - New description
+     * @returns {Promise<any>}
+     */
+    updateGroupDescription = async (groupId: string, description: string): Promise<any> => {
+        return await this.vendor.groupUpdateDescription(groupId, description);
+    }
+
+    /**
+     * Get group participants
+     * @param {string} groupId - Group ID
+     * @returns {Promise<any>} List of participants
+     */
+    getGroupParticipants = async (groupId: string): Promise<any> => {
+        const metadata = await this.vendor.groupMetadata(groupId);
+        return metadata.participants;
+    }
+
+    /**
+     * Promote participant to admin
+     * @param {string} groupId - Group ID
+     * @param {string[]} participants - Array of participant JIDs
+     * @returns {Promise<any>}
+     */
+    promoteToAdmin = async (groupId: string, participants: string[]): Promise<any> => {
+        return await this.vendor.groupParticipantsUpdate(groupId, participants, 'promote');
+    }
+
+    /**
+     * Demote admin to participant
+     * @param {string} groupId - Group ID
+     * @param {string[]} participants - Array of participant JIDs
+     * @returns {Promise<any>}
+     */
+    demoteAdmin = async (groupId: string, participants: string[]): Promise<any> => {
+        return await this.vendor.groupParticipantsUpdate(groupId, participants, 'demote');
+    }
+
+    /**
+     * Update group settings (who can send messages, edit info, etc)
+     * @param {string} groupId - Group ID
+     * @param {string} setting - 'announcement' or 'not_announcement'
+     * @returns {Promise<any>}
+     */
+    updateGroupSettings = async (groupId: string, setting: 'announcement' | 'not_announcement'): Promise<any> => {
+        return await this.vendor.groupSettingUpdate(groupId, setting);
+    }
+
+    /**
+     * Get group invite code
+     * @param {string} groupId - Group ID
+     * @returns {Promise<string>} Invite code
+     */
+    getGroupInviteCode = async (groupId: string): Promise<string> => {
+        return await this.vendor.groupInviteCode(groupId);
+    }
+
+    /**
+     * Revoke group invite code
+     * @param {string} groupId - Group ID
+     * @returns {Promise<string>} New invite code
+     */
+    revokeGroupInviteCode = async (groupId: string): Promise<string> => {
+        return await this.vendor.groupRevokeInvite(groupId);
+    }
 }
 
 

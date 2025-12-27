@@ -1,56 +1,77 @@
-# 🤖 WA Bot - WhatsApp Bot API with Baileys
+# 🤖 WA Bot - Production-Ready WhatsApp Bot API
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.1.6-blue.svg)](https://www.typescriptlang.org/)
 [![Baileys](https://img.shields.io/badge/Baileys-6.4.0-green.svg)](https://github.com/WhiskeySockets/Baileys)
+[![Architecture](https://img.shields.io/badge/Architecture-MVC-brightgreen.svg)](./docs/REFACTORING-SUMMARY.md)
 
-A powerful and feature-complete WhatsApp bot library built with TypeScript using the [@whiskeysockets/baileys](https://github.com/WhiskeySockets/Baileys) library. Supports **28 message types** with REST API integration.
+A **production-ready** WhatsApp bot API built with TypeScript using [@whiskeysockets/baileys](https://github.com/WhiskeySockets/Baileys). Features **52 REST API endpoints**, **modular MVC architecture**, and **real-time webhooks**.
+
+---
 
 ## ✨ Features
 
-### 🎯 Complete Message Type Support (100% Coverage)
+### 🎯 Complete REST API (52 Endpoints)
 
-#### Basic Messaging
+#### Connection Management (5)
+- ✅ QR Code & Pairing Code support
+- ✅ Connection status monitoring
+- ✅ Multi-device support
+- ✅ Graceful disconnect
+
+#### Messaging (10)
 - ✅ Text messages
-- ✅ Image with caption
-- ✅ Video with caption
-- ✅ Audio/Voice notes
-- ✅ Documents/Files
-- ✅ Stickers (static & animated)
-- ✅ Polls/Voting
-- ✅ Location coordinates
-- ✅ Contacts (single & multiple)
-- ✅ Presence updates (typing, recording, etc)
+- ✅ Reactions & Mentions
+- ✅ Reply & Forward
+- ✅ List menus & Templates
+- ✅ Edit & Delete messages
 
-#### 🆕 Interactive Features
-- ✅ **Reactions** - Send emoji reactions to messages
-- ✅ **List Menus** - Beautiful list-based menus
-- ✅ **Reply/Quote** - Reply to specific messages with context
-- ✅ **Mentions** - Tag users in group messages
-- ✅ **Delete Messages** - Remove sent messages
-- ✅ **Edit Messages** - Modify sent messages
+#### Media (7)
+- ✅ Images, Videos, Audio
+- ✅ Documents & Stickers
+- ✅ Location & Contacts
 
-#### 🚀 Advanced Features
-- ✅ **Template Messages** - URL/Call/Quick reply buttons
-- ✅ **Interactive Messages** - Messages with media headers
-- ✅ **Live Location** - Real-time location sharing
-- ✅ **Group Invites** - Send group invitation links
-- ✅ **Forward Messages** - Forward to other chats
-- ✅ **View Once** - Disappearing media messages
-- ✅ **Product Catalog** - WhatsApp Business products
-- ✅ **Orders/Invoices** - Send order details
-- ✅ **Pin Messages** - Pin important messages
+#### Contact Management (8)
+- ✅ List & Search contacts
+- ✅ Block/Unblock
+- ✅ Profile pictures
+- ✅ Update bot profile
 
-### 🔌 REST API
-- Express.js server with authentication
-- 10+ API endpoints for all features
+#### Group Management (14)
+- ✅ Create & Manage groups
+- ✅ Add/Remove participants
+- ✅ Promote/Demote admins
+- ✅ Update settings & invites
+
+#### Webhooks (5)
+- ✅ Real-time event notifications
+- ✅ Signature verification
+- ✅ Event filtering
+- ✅ Enable/Disable controls
+
+#### Bot Info (3)
+- ✅ Bot information
+- ✅ System statistics
+- ✅ Uptime monitoring
+
+### 🏗️ Modular Architecture
+- **MVC Pattern** - Clean separation of concerns
+- **24 Modular Files** - Average 58 lines per file
+- **Easy to Test** - Unit testable controllers
+- **Scalable** - Easy to add new features
+- **Maintainable** - Well-organized codebase
+
+### � Security
+- API Key authentication
+- Webhook signature verification
+- Error handling & validation
+- Session encryption
+
+### � Monitoring
 - Winston logging with timezone support
-- Error handling and validation
-
-### 🔐 Authentication
-- QR Code scanning (default)
-- Pairing code (alternative)
-- Multi-device support
+- Real-time webhooks
+- System statistics
+- Uptime tracking
 
 ## 📦 Installation
 
@@ -104,6 +125,49 @@ bot.on('pairing_code', (code) => {
     console.log('Pairing code:', code);
 });
 ```
+
+### Using Pairing Code
+
+Alternative to QR Code - no camera needed!
+
+```javascript
+const bot = new BaileysClass({ 
+    usePairingCode: true, 
+    phoneNumber: '628XXXXXXXXX' 
+});
+
+bot.on('pairing_code', (code) => {
+    console.log('Pairing code:', code);
+    // Enter this code in WhatsApp
+});
+```
+
+**Quick start with pairing code:**
+```bash
+npm run pairing
+```
+
+See [docs/guides/PAIRING-CODE.md](./docs/guides/PAIRING-CODE.md) for detailed guide.
+
+## 📚 Documentation
+
+Complete documentation available in the [`docs/`](./docs) folder:
+
+### API Documentation
+- [API Summary](./docs/API-SUMMARY.md) - Complete API overview with examples
+- [Connection API](./docs/api/CONNECTION-API.md) - Connection management
+- [Media API](./docs/api/MEDIA-API.md) - Media sending
+- [Contact API](./docs/api/CONTACT-API.md) - Contact management
+- [Webhook API](./docs/api/WEBHOOK-API.md) - Webhook system
+
+### Guides
+- [Pairing Code Guide](./docs/guides/PAIRING-CODE.md) - How to use pairing code
+- [Testing Guide](./docs/guides/TESTING.md) - How to test the bot
+
+### Architecture
+- [Refactoring Summary](./docs/REFACTORING-SUMMARY.md) - Modular architecture details
+
+**See [docs/README.md](./docs/README.md) for complete documentation index.**
 
 ## 📖 API Reference
 
@@ -464,25 +528,151 @@ This project was inspired by:
 - [Baileys](https://github.com/WhiskeySockets/Baileys) - WhatsApp Web API
 - [bot-whatsapp](https://github.com/codigoencasa/bot-whatsapp) - Bot framework
 
-## 🌟 Features Comparison
+## 🌟 Project Status
 
-| Feature | Before | After |
-|---------|--------|-------|
-| Message Types | 12 (44%) | 28 (100%) ✅ |
-| Interactive Features | ❌ | ✅ |
-| Modern WhatsApp Features | ❌ | ✅ |
-| REST API Endpoints | 2 | 10 ✅ |
-| Documentation | Basic | Complete ✅ |
+### ✅ Completed (v2.0.0)
 
-## 🚀 What's New in v1.0.0
+| Feature | Status | Details |
+|---------|--------|---------|
+| REST API Endpoints | ✅ Complete | 52 endpoints across 7 categories |
+| Modular Architecture | ✅ Complete | MVC pattern, 24 files |
+| Webhooks | ✅ Complete | Real-time notifications |
+| Documentation | ✅ Complete | 9 docs in organized structure |
+| Security | ✅ Complete | API key + webhook signatures |
+| TypeScript | ✅ Complete | Full type safety |
 
-- ✅ **16 new message methods** added
-- ✅ **100% message type coverage**
-- ✅ **8 new REST API endpoints**
-- ✅ **Complete TypeScript support**
-- ✅ **Comprehensive documentation**
-- ✅ **Production-ready code**
+---
+
+## 🗺️ Roadmap
+
+### 📅 Phase 1: Core Enhancements (Q1 2025)
+
+#### Testing & Quality
+- [ ] **Unit Tests** - Controller & service tests
+- [ ] **Integration Tests** - API endpoint tests
+- [ ] **E2E Tests** - Full workflow tests
+- [ ] **Test Coverage** - Target 80%+
+
+#### Security Enhancements
+- [ ] **JWT Authentication** - Token-based auth
+- [ ] **Rate Limiting** - Prevent API abuse
+- [ ] **Request Validation** - Input sanitization
+- [ ] **CORS Configuration** - Cross-origin security
+- [ ] **Helmet.js** - Security headers
+
+### 📅 Phase 2: Advanced Features (Q2 2025)
+
+#### Database Integration
+- [ ] **Message History** - Store & retrieve messages
+- [ ] **Contact Database** - Persistent contact storage
+- [ ] **Analytics** - Usage statistics & metrics
+- [ ] **Session Management** - Multi-session support
+
+#### Message Features
+- [ ] **Message Queue** - Bulk message sending
+- [ ] **Scheduled Messages** - Send messages later
+- [ ] **Auto-Reply** - Automated responses
+- [ ] **Chatbot Integration** - AI-powered responses
+
+### 📅 Phase 3: Enterprise Features (Q3 2025)
+
+#### Scalability
+- [ ] **Docker Support** - Containerization
+- [ ] **Kubernetes** - Orchestration
+- [ ] **Load Balancing** - Multiple instances
+- [ ] **Redis Cache** - Performance optimization
+
+#### Monitoring & Observability
+- [ ] **Prometheus Metrics** - System metrics
+- [ ] **Grafana Dashboards** - Visual monitoring
+- [ ] **Error Tracking** - Sentry integration
+- [ ] **Performance Monitoring** - APM integration
+
+### � Phase 4: Developer Experience (Q4 2025)
+
+#### SDK & Libraries
+- [ ] **JavaScript SDK** - Easy integration
+- [ ] **Python SDK** - Python support
+- [ ] **PHP SDK** - PHP support
+- [ ] **CLI Tool** - Command-line interface
+
+#### Documentation & Examples
+- [ ] **Interactive API Docs** - Swagger/OpenAPI
+- [ ] **Video Tutorials** - Step-by-step guides
+- [ ] **Code Examples** - Real-world use cases
+- [ ] **Postman Collection** - API testing
+
+### 🔮 Future Considerations
+
+#### Advanced Integrations
+- [ ] **CRM Integration** - Salesforce, HubSpot
+- [ ] **E-commerce** - Shopify, WooCommerce
+- [ ] **Payment Gateways** - Stripe, PayPal
+- [ ] **Cloud Storage** - S3, Google Cloud
+
+#### AI & Automation
+- [ ] **Natural Language Processing** - Intent detection
+- [ ] **Sentiment Analysis** - Message analysis
+- [ ] **Smart Routing** - Intelligent message routing
+- [ ] **Predictive Analytics** - Usage predictions
+
+---
+
+## 📈 Version History
+
+### v2.0.0 (Current) - December 2025
+- ✅ **Modular Architecture** - Refactored to MVC pattern
+- ✅ **52 API Endpoints** - Complete REST API
+- ✅ **Webhooks** - Real-time event notifications
+- ✅ **Documentation** - Organized docs/ folder
+- ✅ **24 Modular Files** - Clean code structure
+
+### v1.0.0 - November 2025
+- ✅ **28 Message Types** - 100% coverage
+- ✅ **10 API Endpoints** - Basic REST API
+- ✅ **TypeScript** - Full type safety
+- ✅ **Pairing Code** - Alternative auth method
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+### Priority Areas
+1. **Testing** - Write unit & integration tests
+2. **Documentation** - Improve guides & examples
+3. **Bug Fixes** - Report & fix issues
+4. **Features** - Implement roadmap items
+
+### How to Contribute
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE.md](LICENSE.md)
+
+## 👤 Author
+
+**Ujang Supriyadi**
+- GitHub: [@ujangsprr](https://github.com/ujangsprr)
+
+## 🙏 Acknowledgements
+
+This project was inspired by:
+- [Baileys](https://github.com/WhiskeySockets/Baileys) - WhatsApp Web API
+- [bot-whatsapp](https://github.com/codigoencasa/bot-whatsapp) - Bot framework
 
 ---
 
 **Made with ❤️ for the WhatsApp Bot community**
+
+**⭐ Star this repo if you find it useful!**
