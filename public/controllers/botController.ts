@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { botService } from '../services/botService.js';
-import { statsService } from '../services/statsService.js';
-import { logger } from '../config/logger.js';
+import { botService } from '../services/botService';
+import { statsService } from '../services/statsService';
+import { logger } from '../config/logger';
 
 export class BotController {
     async getInfo(req: Request, res: Response) {

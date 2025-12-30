@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { botController } from '../controllers/botController.js';
-import { authenticate } from '../middleware/auth.js';
+import { botController } from '../controllers/botController';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 

@@ -12,6 +12,12 @@ export interface ConnectionState {
     phoneNumber: string | null;
     lastQRUpdate: string | null;
     lastPairingUpdate: string | null;
+    user?: {
+        id: string;
+        name?: string;
+        phone?: string;
+        profilePicture?: string;
+    };
 }
 
 export interface BotInfo {

@@ -1,12 +1,19 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { logger } from './config/logger.js';
-import { errorHandler } from './middleware/errorHandler.js';
-import routes from './routes/index.js';
-import { botService } from './services/botService.js';
+import cors from 'cors';
+import { logger } from './config/logger';
+import { errorHandler } from './middleware/errorHandler';
+import routes from './routes/index';
+import { botService } from './services/botService';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5002;
+
+// CORS middleware - allow requests from dashboard
+app.use(cors({
+    origin: ['http://localhost:5001', 'http://127.0.0.1:5001'],
+    credentials: true
+}));
 
 // Middleware
 app.use(bodyParser.json());

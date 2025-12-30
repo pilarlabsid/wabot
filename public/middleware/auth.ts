@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '../config/logger.js';
+import { logger } from '../config/logger';
 
 const API_KEY = process.env.API_KEY || 'daa8ce0ff449a97c15a9159156cfb20a48bda1037450457f1c26e19159d7818a';
 

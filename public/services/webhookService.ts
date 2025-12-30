@@ -1,5 +1,5 @@
-import { WebhookConfig } from '../types/index.js';
-import { logger } from '../config/logger.js';
+import { WebhookConfig } from '../types/index';
+import { logger } from '../config/logger';
 import crypto from 'crypto';
 
 class WebhookService {

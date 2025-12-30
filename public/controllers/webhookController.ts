@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { webhookService } from '../services/webhookService.js';
-import { logger } from '../config/logger.js';
+import { webhookService } from '../services/webhookService';
+import { logger } from '../config/logger';
 
 export class WebhookController {
     async configure(req: Request, res: Response) {

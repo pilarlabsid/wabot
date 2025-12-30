@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { botService } from '../services/botService.js';
-import { logger } from '../config/logger.js';
+import { botService } from '../services/botService';
+import { logger } from '../config/logger';
 
 export class MessagingController {
     async sendMessage(req: Request, res: Response) {

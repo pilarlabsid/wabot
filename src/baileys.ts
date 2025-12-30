@@ -61,6 +61,7 @@ export class BaileysClass extends EventEmitter {
     private sock: any;
     private NAME_DIR_SESSION: string;
     private plugin: boolean;
+    private manualLogout: boolean;
 
     constructor(args = {}) {
 
@@ -68,6 +69,7 @@ export class BaileysClass extends EventEmitter {
         this.vendor = null;
         this.globalVendorArgs = { name: `bot`, usePairingCode: false, phoneNumber: null, gifPlayback: false, dir: './', ...args };
         this.NAME_DIR_SESSION = `${this.globalVendorArgs.dir}${this.globalVendorArgs.name}_sessions`;
+        this.manualLogout = false;
         this.initBailey();
 
         // is plugin?
@@ -110,7 +112,7 @@ export class BaileysClass extends EventEmitter {
         this.sock = makeWASocket({
             version,
             logger,
-            printQRInTerminal: this.plugin || this.globalVendorArgs.usePairingCode ? false : true,
+            // printQRInTerminal removed - deprecated option, we handle QR via events
             auth: {
                 creds: state.creds,
                 keys: makeCacheableSignalKeyStore(state.keys, logger),
@@ -150,8 +152,20 @@ export class BaileysClass extends EventEmitter {
         const statusCode = lastDisconnect?.error?.output?.statusCode;
 
         if (connection === 'close') {
-            if (statusCode !== DisconnectReason.loggedOut) this.initBailey();
-            if (statusCode === DisconnectReason.loggedOut) this.clearSessionAndRestart();
+            // Don't reconnect if manual logout
+            if (this.manualLogout) {
+                // Manual logout - not reconnecting
+                this.manualLogout = false;
+                return;
+            }
+
+            // Only auto-reconnect if NOT logged out manually
+            if (statusCode !== DisconnectReason.loggedOut) {
+                this.initBailey();
+            } else {
+                // If logged out (but not manually), clear and restart
+                this.clearSessionAndRestart();
+            }
         }
 
         if (connection === 'open') {
@@ -161,22 +175,13 @@ export class BaileysClass extends EventEmitter {
         }
 
         if (qr && !this.globalVendorArgs.usePairingCode) {
-            // Display QR code in terminal as ASCII art
-            console.log('\n📱 SCAN QR CODE BELOW:\n');
-            qrcode.generate(qr, { small: true });
-            console.log('\n');
-
-            if (this.plugin) this.emit('require_action', {
-                instructions: [
-                    `Debes escanear el QR Code 👌 ${this.globalVendorArgs.name}.qr.png`,
-                    `Recuerda que el QR se actualiza cada minuto `,
-                    `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
-                ],
-            })
+            // QR code is handled via event emission to dashboard
+            // No need to print in terminal
             this.emit('qr', qr);
             if (this.plugin) await utils.baileyGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
         }
     }
+
 
     clearSessionAndRestart = (): void => {
         const PATH_BASE = join(process.cwd(), this.NAME_DIR_SESSION);
@@ -188,6 +193,34 @@ export class BaileysClass extends EventEmitter {
                 console.error('Error to delete directory:', err);
             });
     }
+
+    logout = async (): Promise<void> => {
+        this.manualLogout = true;
+        try {
+            // Close the socket connection
+            if (this.sock) {
+                try {
+                    await this.sock.logout();
+                } catch (err) {
+                    console.warn('Socket logout failed (ignoring):', err);
+                }
+            }
+            // Clear session files without restarting
+            const PATH_BASE = join(process.cwd(), this.NAME_DIR_SESSION);
+            await fs.remove(PATH_BASE);
+
+            // Reset flag before re-init to allow future auto-reconnects
+            this.manualLogout = false;
+
+            // Re-initialize to allow new connection immediately
+            await this.initBailey();
+        } catch (err) {
+            console.error('Error during logout:', err);
+            this.manualLogout = false; // Reset flag on error
+            throw err;
+        }
+    }
+
 
     busEvents = (): any[] => [
         {

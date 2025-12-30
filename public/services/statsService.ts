@@ -1,4 +1,4 @@
-import { BotStats } from '../types/index.js';
+import { BotStats } from '../types/index';
 
 class StatsService {
     formatUptime(seconds: number): string {
@@ -7,7 +7,7 @@ class StatsService {
         const minutes = Math.floor((seconds % 3600) / 60);
         const secs = Math.floor(seconds % 60);
 
-        const parts = [];
+        const parts: string[] = [];
         if (days > 0) parts.push(`${days}d`);
         if (hours > 0) parts.push(`${hours}h`);
         if (minutes > 0) parts.push(`${minutes}m`);

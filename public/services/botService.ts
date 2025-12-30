@@ -1,7 +1,7 @@
-import { BaileysClass } from '../../lib/baileys.js';
-import { ConnectionState } from '../types/index.js';
-import { logger } from '../config/logger.js';
-import { webhookService } from './webhookService.js';
+import { BaileysClass } from '../../src/baileys';
+import { ConnectionState } from '../types/index';
+import { logger } from '../config/logger';
+import { webhookService } from './webhookService';
 
 class BotService {
     public bot: BaileysClass;
@@ -19,6 +19,53 @@ class BotService {
         };
 
         this.setupEventHandlers();
+    }
+
+    async reinitializeWithMode(mode: 'qr' | 'pairing', phoneNumber?: string) {
+        logger.info(`Reinitializing bot with mode: ${mode}`);
+
+        // Clear current state
+        this.connectionState.qrCode = null;
+        this.connectionState.pairingCode = null;
+
+        if (mode === 'pairing') {
+            if (!phoneNumber) {
+                throw new Error('Phone number is required for pairing mode');
+            }
+            this.connectionState.phoneNumber = phoneNumber;
+            // Create new bot instance with pairing mode
+            this.bot = new BaileysClass({ usePairingCode: true, phoneNumber });
+        } else {
+            // Create new bot instance with QR mode
+            this.bot = new BaileysClass({ usePairingCode: false });
+        }
+
+        this.setupEventHandlers();
+        logger.info(`Bot reinitialized successfully in ${mode} mode`);
+    }
+
+    async logout() {
+        logger.info('Logging out bot...');
+        try {
+            await this.bot.logout();
+        } catch (error: any) {
+            logger.warn(`Error during socket logout (ignoring to ensure cleanup): ${error.message}`);
+        } finally {
+            // Force state cleanup
+            this.connectionState.isConnected = false;
+            this.connectionState.user = undefined;
+            this.connectionState.qrCode = null;
+            this.connectionState.pairingCode = null;
+
+            // Send webhook
+            await webhookService.send('connection.update', {
+                status: 'disconnected',
+                reason: 'manual_logout',
+                timestamp: new Date().toISOString()
+            });
+
+            logger.info('Bot state reset to disconnected');
+        }
     }
 
     private setupEventHandlers() {
@@ -44,7 +91,7 @@ class BotService {
         logger.info('NEW QR CODE RECEIVED');
         this.connectionState.qrCode = qr;
         this.connectionState.lastQRUpdate = new Date().toISOString();
-        console.log('NEW QR CODE:', qr);
+        // QR code available via API - no need to print in terminal
 
         // Send webhook
         webhookService.send('qr.update', {
@@ -66,16 +113,52 @@ class BotService {
     }
 
     private async handleReady() {
+        if (this.connectionState.isConnected) {
+            return;
+        }
         logger.info('BOT IS READY');
         this.connectionState.isConnected = true;
         this.connectionState.qrCode = null;
         this.connectionState.pairingCode = null;
 
+        await this.refreshUserProfile();
+
         // Send webhook
         await webhookService.send('connection.ready', {
             status: 'connected',
+            user: this.connectionState.user,
             timestamp: new Date().toISOString()
         });
+    }
+
+    public async refreshUserProfile() {
+        // Get user information from socket
+        try {
+            const sock = this.bot.getInstance();
+            const userInfo = sock?.user;
+
+            if (userInfo) {
+                this.connectionState.user = {
+                    id: userInfo.id || '',
+                    name: userInfo.name || userInfo.verifiedName || 'Unknown',
+                    phone: userInfo.id?.split(':')[0] || userInfo.id?.split('@')[0] || null
+                };
+
+                // Try to get profile picture
+                try {
+                    const profilePic = await this.bot.getProfilePicture(userInfo.id);
+                    if (profilePic) {
+                        this.connectionState.user.profilePicture = profilePic;
+                    }
+                } catch (picError) {
+                    logger.warn('Could not fetch profile picture');
+                }
+
+                logger.info(`Connected as: ${this.connectionState.user.name} (${this.connectionState.user.phone})`);
+            }
+        } catch (error: any) {
+            logger.error(`Failed to get user info: ${error.message}`);
+        }
     }
 
     private async handleMessage(msg: any) {
